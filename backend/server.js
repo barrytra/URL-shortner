@@ -1,21 +1,30 @@
-require("dotenv").config();
-const express = require("express");
-const redis = require("redis");
-const shortid = require("shortid");
+import dotenv from "dotenv";
+import express from "express";
+import shortid from "shortid";
+import Redis from "ioredis"
+import { createClient } from "redis";
+import cors from "cors"
+
+dotenv.config();
 
 const app = express();
 app.use(express.json());
 
 // Configure Redis client
-const redisClient = redis.createClient();
-redisClient.connect();
+const redisClient = createClient({
+    url: process.env.REDIS_URL || "redis://localhost:6379",
+});
+
+redisClient.on("error", (err) => console.log("Redis Error:", err));
+
+await redisClient.connect();
 
 redisClient.on("connect", () => console.log("Connected to Redis"));
 redisClient.on("error", (err) => console.error("Redis error:", err));
 
 const BASE_URL = process.env.BASE_URL || "http://localhost:4000";
 
-const cors = require("cors");
+
 app.use(cors());
 
 app.use(cors({
@@ -57,10 +66,6 @@ app.get("/:shortCode", async (req, res) => {
     }
 });
 
-client.get("shortURL", (err, data) => {
-    if (err) console.error(err);
-    else console.log("Stored URL:", data);
-});
 // Start the server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
