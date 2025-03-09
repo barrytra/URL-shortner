@@ -31,3 +31,7 @@ A fully functional URL shortening service built with **Node.js**, **Redis**, and
 - Redis  
 - CORS  
 
+**Deployment:**  
+- Frontend → Render  
+- Backend → Render
+- redis - upstash
